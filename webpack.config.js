@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
     entry: "./src/index.jsx",
     output: {
-        path: path.resolve(__dirname, "out"),
+        path: path.resolve(__dirname, "dist"),
         filename: "bundle.js",
     },
     module: {
@@ -11,18 +11,11 @@ module.exports = {
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader",
-                },
-            },
-            {
-                test: /\.css$/,
-                use: ["style-loader", "css-loader"],
+                use: "babel-loader",
             },
         ],
     },
     resolve: {
         extensions: [".js", ".jsx"],
     },
-    devtool: "inline-source-map",
 };
