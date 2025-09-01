@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
+const isDev = process.env.NODE_ENV !== 'production';
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -12,11 +13,14 @@ const createWindow = () => {
         },
     });
 
-    // Always load the bundled React app
-    win.loadFile(path.join(__dirname, 'dist/index.html'));
-
-    // Open DevTools in development
-    win.webContents.openDevTools();
+    if (isDev) {
+        // Load React dev server
+        win.loadURL('http://localhost:8080');
+        win.webContents.openDevTools();
+    } else {
+        // Load built React app
+        win.loadFile(path.join(__dirname, 'dist/index.html'));
+    }
 };
 
 app.whenReady().then(() => {

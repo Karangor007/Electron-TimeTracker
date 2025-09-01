@@ -4,12 +4,11 @@
   "description": "demo app",
   "main": "main.js",
   "scripts": {
-    "start": "concurrently \"npm run build:react\" \"electron-forge start\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "build:react": "webpack --mode development",
-    "build": "webpack --mode production && electron-forge make"
+    "start": "concurrently \"npm run start:react\" \"npm run start:electron\"",
+    "start:react": "webpack serve --mode development",
+    "start:electron": "wait-on http://localhost:8080 && npx electron .",
+    "build": "webpack --mode production && electron-forge make",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Treta Infotech",
   "license": "ISC",
@@ -27,9 +26,11 @@
     "@electron/fuses": "^1.8.0",
     "babel-loader": "^10.0.0",
     "concurrently": "^9.2.1",
+    "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^7.1.2",
     "electron": "^37.4.0",
     "style-loader": "^4.0.0",
+    "wait-on": "^8.0.4",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
