@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
+const rootPath = require("path")
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -9,8 +10,8 @@ const createWindow = () => {
         width: 1000,
         height: 800,
         webPreferences: {
+            // preload: rootPath.dirname + '/preload.js',
             preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: false,
             contextIsolation: true,
         },
     });
@@ -29,7 +30,7 @@ app.whenReady().then(() => {
     // Screenshot handler
     ipcMain.handle('take-screenshot', async () => {
         const sources = await desktopCapturer.getSources({ types: ['screen'] });
-        const screenSource = sources[0]; // primary screen
+        const screenSource = sources[0];
 
         const image = screenSource.thumbnail.toPNG();
         const screenshotsDir = path.join(app.getPath('pictures'), 'TimeTrackerScreenshots');
@@ -39,7 +40,7 @@ app.whenReady().then(() => {
         const filePath = path.join(screenshotsDir, `screenshot_${Date.now()}.png`);
         fs.writeFileSync(filePath, image);
 
-        return filePath; // send path back to renderer
+        return filePath;
     });
 
     app.on('activate', () => {
