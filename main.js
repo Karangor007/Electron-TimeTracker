@@ -13,12 +13,12 @@ const createWindow = () => {
         },
     });
 
+    const isDev = process.env.NODE_ENV !== 'production';
+
     if (isDev) {
-        // Load React dev server
         win.loadURL('http://localhost:8080');
         win.webContents.openDevTools();
     } else {
-        // Load built React app
         win.loadFile(path.join(__dirname, 'dist/index.html'));
     }
 };

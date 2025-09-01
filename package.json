@@ -7,8 +7,7 @@
     "start": "concurrently \"npm run start:react\" \"npm run start:electron\"",
     "start:react": "webpack serve --mode development",
     "start:electron": "wait-on http://localhost:8080 && npx electron .",
-    "build": "webpack --mode production && electron-forge make",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --mode production && electron-forge make"
   },
   "author": "Treta Infotech",
   "license": "ISC",
