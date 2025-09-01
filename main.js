@@ -10,7 +10,6 @@ const createWindow = () => {
         width: 1000,
         height: 800,
         webPreferences: {
-            // preload: rootPath.dirname + '/preload.js',
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
         },
@@ -29,11 +28,15 @@ app.whenReady().then(() => {
 
     // Screenshot handler
     ipcMain.handle('take-screenshot', async () => {
-        const sources = await desktopCapturer.getSources({ types: ['screen'] });
+        const sources = await desktopCapturer.getSources({
+            types: ['screen'],
+            thumbnailSize: { width: 1920, height: 1080 } // or use electron.screen API for actual size
+        });
         const screenSource = sources[0];
 
         const image = screenSource.thumbnail.toPNG();
-        const screenshotsDir = path.join(app.getPath('pictures'), 'TimeTrackerScreenshots');
+        // ✅ Save inside your project root/assets/screenshots
+        const screenshotsDir = path.join(__dirname, 'assets', 'screenshots');
 
         if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir);
 

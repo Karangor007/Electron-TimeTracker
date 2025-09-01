@@ -6,6 +6,7 @@ export default function ScreenshotButton() {
     const handleScreenshot = async () => {
         if (window.electronAPI) {
             const filePath = await window.electronAPI.takeScreenshot();
+            alert("Screenshot saved at: " + filePath);
             console.log("Screenshot saved at:", filePath);
         } else {
             console.error("electronAPI is undefined — are you running in Electron?");
