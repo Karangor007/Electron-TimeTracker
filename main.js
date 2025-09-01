@@ -1,28 +1,38 @@
-const { app, BrowserWindow, ipcMain } = require('electron/main')
-const path = require('node:path')
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('node:path');
+
+const isDev = !app.isPackaged; // check if running in dev or prod
 
 const createWindow = () => {
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1000,
+        height: 800,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
-        }
-    })
+            preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: false, // security: keep false unless needed
+            contextIsolation: true, // recommended
+        },
+    });
 
-    win.loadFile('index.html');
-}
+    if (isDev) {
+        // React dev server
+        win.loadURL('http://localhost:3000');
+        win.webContents.openDevTools();
+    } else {
+        // React production build
+        win.loadFile(path.join(__dirname, '../react-app/build/index.html'));
+    }
+};
 
 app.whenReady().then(() => {
-    ipcMain.handle('ping', () => 'pong')
+    ipcMain.handle('ping', () => 'pong');
     createWindow();
 
-    // for MacOs, open window if none are open
     app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
-    })
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
 });
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit()
-})
+    if (process.platform !== 'darwin') app.quit();
+});
