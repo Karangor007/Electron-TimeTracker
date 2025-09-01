@@ -1,5 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, desktopCapturer } = require('electron');
 const path = require('node:path');
+const fs = require('fs');
+
 const isDev = process.env.NODE_ENV !== 'production';
 
 const createWindow = () => {
@@ -13,8 +15,6 @@ const createWindow = () => {
         },
     });
 
-    const isDev = process.env.NODE_ENV !== 'production';
-
     if (isDev) {
         win.loadURL('http://localhost:8080');
         win.webContents.openDevTools();
@@ -24,8 +24,23 @@ const createWindow = () => {
 };
 
 app.whenReady().then(() => {
-    ipcMain.handle('ping', () => 'pong');
     createWindow();
+
+    // Screenshot handler
+    ipcMain.handle('take-screenshot', async () => {
+        const sources = await desktopCapturer.getSources({ types: ['screen'] });
+        const screenSource = sources[0]; // primary screen
+
+        const image = screenSource.thumbnail.toPNG();
+        const screenshotsDir = path.join(app.getPath('pictures'), 'TimeTrackerScreenshots');
+
+        if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir);
+
+        const filePath = path.join(screenshotsDir, `screenshot_${Date.now()}.png`);
+        fs.writeFileSync(filePath, image);
+
+        return filePath; // send path back to renderer
+    });
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();

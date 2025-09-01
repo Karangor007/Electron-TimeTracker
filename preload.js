@@ -1,9 +1,20 @@
-const { contextBridge } = require('electron')
+const { contextBridge, desktopCapturer } = require("electron");
+const fs = require("fs");
+const path = require("path");
+const { app } = require("electron");
 
-contextBridge.exposeInMainWorld('versions', {
-    node: () => process.versions.node,
-    chrome: () => process.versions.chrome,
-    electron: () => process.versions.electron,
-    ping: () => ipcRenderer.invoke('ping')
-    // we can also expose variables, not just functions
-})
+contextBridge.exposeInMainWorld("electronAPI", {
+    takeScreenshot: async () => {
+        const sources = await desktopCapturer.getSources({ types: ["screen"] });
+        const screenSource = sources[0];
+        const image = screenSource.thumbnail.toPNG();
+
+        const screenshotsDir = path.join(app.getPath("pictures"), "TimeTrackerScreenshots");
+        if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir);
+
+        const filePath = path.join(screenshotsDir, `screenshot_${Date.now()}.png`);
+        fs.writeFileSync(filePath, image);
+
+        return filePath;
+    },
+});
