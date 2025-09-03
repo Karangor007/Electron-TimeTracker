@@ -4,7 +4,9 @@ import ScreenshotButton from "./ScreenshotButton";
 export default function App() {
     return (
         <div>
-            <h1>Time Tracker Demo</h1>
+            <a href="/">
+                <img src="./assets/images/Treta_Logo.svg" alt="" />
+            </a>
             <ScreenshotButton />
         </div>
     );
